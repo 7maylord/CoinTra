@@ -6,8 +6,9 @@ import { type ISourceOptions } from '@tsparticles/engine';
 
 export default function ParticlesBackground() {
   useEffect(() => {
-    initParticlesEngine(async () => {
-      await import('@tsparticles/slim');
+    initParticlesEngine(async (engine) => {
+      const { loadSlim } = await import('@tsparticles/slim');
+      await loadSlim(engine);
     });
   }, []);
 

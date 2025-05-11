@@ -1,4 +1,4 @@
-import { Coin } from "@/types";
+import { Coin, SearchCoin } from "@/types";
 
 export async function fetchCoins(coinIds: string[]): Promise<Coin[]> {
   const ids = coinIds.join(',');
@@ -14,3 +14,20 @@ export async function fetchCoins(coinIds: string[]): Promise<Coin[]> {
   console.log('CoinGecko API Response:', data);
   return data;
 }
+
+export async function searchCoins(query: string): Promise<SearchCoin[]> {
+    if (!query.trim()) {
+      return [];
+    }
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query)}`
+    );
+  
+    if (!response.ok) {
+      throw new Error('Failed to search coins');
+    }
+  
+    const data = await response.json();
+    console.log('CoinGecko Search Response:', data); 
+    return data.coins || [];
+  }
