@@ -9,27 +9,30 @@ import toast from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import SearchBar from "@/components/SearchBar";
 import SortControl from "@/components/SortControl";
+import HeroSection from "@/components/HeroSection";
+import Footer from "@/components/Footer";
 
 const defaultCoinIds = ['bitcoin', 'ethereum', 'solana', 'matic-network', 'dogecoin'];
 
 
 export default function Home() {
 
-  const [coinIds, setCoinIds] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('coinIds');
-      return saved ? JSON.parse(saved) : defaultCoinIds;
-    }
-    return defaultCoinIds;
-  });
+  const [coinIds, setCoinIds] = useState<string[]>(defaultCoinIds);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
 
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('sortOrder');
-      return saved ? (saved as 'asc' | 'desc') : 'desc';
+  // Sync state with localStorage on client-side after hydration
+  useEffect(() => {
+    const savedCoinIds = localStorage.getItem('coinIds');
+    if (savedCoinIds) {
+      setCoinIds(JSON.parse(savedCoinIds));
     }
-    return 'desc';
-  });
+
+    const savedSortOrder = localStorage.getItem('sortOrder');
+    if (savedSortOrder) {
+      setSortOrder(savedSortOrder as 'asc' | 'desc');
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('coinIds', JSON.stringify(coinIds));
@@ -98,9 +101,14 @@ export default function Home() {
     <ParticlesBackground />
 
     <div className="max-w-7xl mx-auto px-4 py-12 relative z-10">
-      <h1 className="text-4xl font-extrabold text-center mb-10 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500">
+      
+      {/* Tagline with Animation */}
+      <h1 className="text-5xl sm:text-6xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500 mb-6 animate-pulse-slow">
         CoinTra
       </h1>
+
+      {/* Hero Section */}
+      <HeroSection />
 
       {/* Search Bar and Sort Control */}
       <div className="mb-8 flex flex-col sm:flex-row gap-4">
@@ -117,7 +125,7 @@ export default function Home() {
           {isLoading ? (
             Array(coinIds.length)
               .fill(null)
-              .map((_, index) => <CoinCard key={index} />)
+              .map((_, index) => <CoinCard key={`skeleton-${index}`} />)
           ) : sortedCoins.length > 0 ? (
             sortedCoins.map((coin) => (
               <CoinCard
@@ -132,6 +140,9 @@ export default function Home() {
             </p>
           )}
         </div>
+
+        {/* Footer */}
+        <Footer />
     </div>
   </main>
 );

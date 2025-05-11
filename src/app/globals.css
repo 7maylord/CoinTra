@@ -39,3 +39,7 @@ body {
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out;
 }
+
+.animate-pulse-slow {
+  animation: pulseSlow 3s ease-in-out infinite;
+}
