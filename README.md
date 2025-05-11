@@ -14,6 +14,7 @@ CoinTra is a web3 inspired application built to track live cryptocurrency prices
 1. Clone the repo: 
 ```bash
 git clone https://github.com/7maylord/CoinTra
+cd CoinTra
 ```
 2. Install dependencies: 
 ```bash
