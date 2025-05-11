@@ -41,10 +41,19 @@ export default function RootLayout({
                 backdropFilter: 'blur(8px)',
                 borderRadius: '12px',
                 padding: '12px',
+                boxShadow: '0 0 10px rgba(34, 211, 238, 0.5)', // Neon glow
+                transition: 'all 0.3s ease-in-out',
               },
               error: {
                 style: {
                   borderColor: 'rgba(239, 68, 68, 0.5)', // Red for errors
+                  boxShadow: '0 0 10px rgba(239, 68, 68, 0.5)',
+                },
+              },
+              success: {
+                style: {
+                  borderColor: 'rgba(74, 222, 128, 0.5)', // Green for success
+                  boxShadow: '0 0 10px rgba(74, 222, 128, 0.5)', // Green glow
                 },
               },
             }}

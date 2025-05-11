@@ -8,6 +8,7 @@ import { fetchCoins } from "@/services/CoinGecko";
 import toast from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import SearchBar from "@/components/SearchBar";
+import SortControl from "@/components/SortControl";
 
 const defaultCoinIds = ['bitcoin', 'ethereum', 'solana', 'matic-network', 'dogecoin'];
 
@@ -22,9 +23,21 @@ export default function Home() {
     return defaultCoinIds;
   });
 
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('sortOrder');
+      return saved ? (saved as 'asc' | 'desc') : 'desc';
+    }
+    return 'desc';
+  });
+
   useEffect(() => {
     localStorage.setItem('coinIds', JSON.stringify(coinIds));
   }, [coinIds]);
+
+  useEffect(() => {
+    localStorage.setItem('sortOrder', sortOrder);
+  }, [sortOrder]);
 
   const { data: coins, isLoading, isError, refetch } = useQuery<Coin[]>({
     queryKey: ['coins', coinIds],
@@ -63,29 +76,50 @@ export default function Home() {
     toast.success('Coin removed', { duration: 3000 });
   };
 
+  const handleSortChange = (order: 'asc' | 'desc') => {
+    setSortOrder(order);
+    toast.success(`Sorted by 24h change (${order === 'asc' ? 'low to high' : 'high to low'})`, {
+      duration: 3000,
+    });
+  };
+
+  // Sort coins by price_change_percentage_24h
+  const sortedCoins = coins
+    ? [...coins].sort((a, b) => {
+        return sortOrder === 'asc'
+          ? a.price_change_percentage_24h - b.price_change_percentage_24h
+          : b.price_change_percentage_24h - a.price_change_percentage_24h;
+      })
+    : [];
+
   return (
     <main className="min-h-screen relative">
-    {/* Web3 Particle Background */}
+    {/* Particle Background */}
     <ParticlesBackground />
 
-    <div className="max-w-6xl mx-auto px-4 py-12 relative z-10">
+    <div className="max-w-7xl mx-auto px-4 py-12 relative z-10">
       <h1 className="text-4xl font-extrabold text-center mb-10 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500">
         CoinTra
       </h1>
 
-      {/* Search Bar */}
-      <div className="mb-10">
-          <SearchBar onAddCoin={handleAddCoin} />
+      {/* Search Bar and Sort Control */}
+      <div className="mb-8 flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <SearchBar onAddCoin={handleAddCoin} />
+          </div>
+          <div className="w-full sm:w-48">
+            <SortControl onSortChange={handleSortChange} />
+          </div>
         </div>
 
       {/* Card Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 animate-fade-in">
           {isLoading ? (
             Array(coinIds.length)
               .fill(null)
               .map((_, index) => <CoinCard key={index} />)
-          ) : coins && coins.length > 0 ? (
-            coins.map((coin) => (
+          ) : sortedCoins.length > 0 ? (
+            sortedCoins.map((coin) => (
               <CoinCard
                 key={coin.id}
                 coin={coin}

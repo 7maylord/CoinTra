@@ -23,7 +23,7 @@ export default function CoinCard({ coin, onRemove }: CoinCardProps) {
   }
 
   return (
-    <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl border border-cyan-500/30 hover:border-cyan-400 transition-all hover:scale-105">
+    <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl border border-cyan-500/30 hover:border-cyan-400 transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(34,211,238,0.5)]">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
           {coin.image && (
